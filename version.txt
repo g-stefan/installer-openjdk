@@ -1,0 +1,1 @@
+openjdk-14.0.2_windows-x64_bin.zip,https://openjdk.java.net/,https://jdk.java.net/14/
