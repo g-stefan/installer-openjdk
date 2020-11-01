@@ -13,7 +13,7 @@
 Name "OpenJRE"
 
 ; Version
-!define OpenJREVersion "14.0.2"
+!define OpenJREVersion "$%PRODUCT_VERSION%"
 
 ; The file to write                     
 OutFile "installer\openjre-${OpenJREVersion}-installer.exe"

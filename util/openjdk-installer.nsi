@@ -13,7 +13,7 @@
 Name "OpenJDK"
 
 ; Version
-!define OpenJDKVersion "14.0.2"
+!define OpenJDKVersion "$%PRODUCT_VERSION%"
 
 ; The file to write                     
 OutFile "installer\openjdk-${OpenJDKVersion}-installer.exe"

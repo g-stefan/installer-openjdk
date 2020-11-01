@@ -5,14 +5,16 @@ rem Created by Grigore Stefan <g_stefan@yahoo.com>
 
 echo -^> make openjdk
 
+call build.config.cmd
+
 if exist build\ rmdir /Q /S build
 if exist release\ rmdir /Q /S release
 
 mkdir build
 mkdir release
 
-7z x "vendor/openjdk-14.0.2_windows-x64_bin.zip" -aoa -obuild
-move /Y "build\jdk-14.0.2" "release\jdk"
+7z x "vendor/openjdk-%PRODUCT_VERSION%_windows-x64_bin.zip" -aoa -obuild
+move /Y "build\jdk-%PRODUCT_VERSION%" "release\jdk"
 if exist build\ rmdir /Q /S build
 
 set JRE_MODULES=java.base
