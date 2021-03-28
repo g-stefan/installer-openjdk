@@ -1,5 +1,5 @@
 ;--------------------------------
-; OpenJDK Installer
+; OpenJRE Installer
 ;
 ; Public domain
 ; http://unlicense.org/
@@ -8,15 +8,15 @@
 
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
- 
+
 ; The name of the installer
-Name "OpenJDK"
+Name "OpenJRE"
 
 ; Version
-!define OpenJDKVersion "$%PRODUCT_VERSION%"
+!define OpenJREVersion "$%PRODUCT_VERSION%"
 
 ; The file to write                     
-OutFile "installer\openjdk-${OpenJDKVersion}-installer.exe"
+OutFile "installer\openjre-${OpenJREVersion}-installer.exe"
 
 Unicode True
 CRCCheck on
@@ -24,27 +24,27 @@ RequestExecutionLevel admin
 BrandingText "Grigore Stefan [ github.com/g-stefan ]"
 
 ; The default installation directory
-InstallDir "$PROGRAMFILES64\OpenJDK"
+InstallDir "$PROGRAMFILES64\OpenJRE"
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\OpenJDK" "InstallPath"
+InstallDirRegKey HKLM "Software\OpenJRE" "InstallPath"
 
 ;--------------------------------
 ;Interface Settings
 
 !define MUI_ABORTWARNING
-!define MUI_ICON "util\system-installer.ico"
-!define MUI_UNICON "util\system-installer.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "util\xyo-installer-wizard.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "util\xyo-uninstaller-wizard.bmp"
+!define MUI_ICON "source\system-installer.ico"
+!define MUI_UNICON "source\system-installer.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "source\xyo-installer-wizard.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "source\xyo-uninstaller-wizard.bmp"
 
 ;--------------------------------
 ;Pages
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "release\LICENSE"
+!insertmacro MUI_PAGE_LICENSE "output\LICENSE"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -66,7 +66,7 @@ InstallDirRegKey HKLM "Software\OpenJDK" "InstallPath"
 ; Generate signed uninstaller
 !ifdef INNER
 	!echo "Inner invocation"                  ; just to see what's going on
-	OutFile "build\dummy-installer.exe"       ; not really important where this is
+	OutFile "temp\dummy-installer.exe"       ; not really important where this is
 	SetCompress off                           ; for speed
 !else
 	!echo "Outer invocation"
@@ -74,17 +74,17 @@ InstallDirRegKey HKLM "Software\OpenJDK" "InstallPath"
 	; Call makensis again against current file, defining INNER.  This writes an installer for us which, when
 	; it is invoked, will just write the uninstaller to some location, and then exit.
  
-	!makensis '/NOCD /DINNER "util\${__FILE__}"' = 0
+	!makensis '/NOCD /DINNER "source\${__FILE__}"' = 0
  
 	; So now run that installer we just created as build\temp-installer.exe.  Since it
 	; calls quit the return value isn't zero.
  
-	!system 'set __COMPAT_LAYER=RunAsInvoker&"build\dummy-installer.exe"' = 2
+	!system 'set __COMPAT_LAYER=RunAsInvoker&"temp\dummy-installer.exe"' = 2
  
 	; That will have written an uninstaller binary for us.  Now we sign it with your
 	; favorite code signing tool.
  
-	!system 'grigore-stefan.sign "OpenJDK" "build\Uninstall.exe"' = 0
+	!system 'grigore-stefan.sign "OpenJRE" "temp\Uninstall.exe"' = 0
  
 	; Good.  Now we can carry on writing the real installer. 	 
 !endif
@@ -105,49 +105,44 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "OpenJDK (required)" MainSection
+Section "OpenJRE (required)" MainSection
 
 	SectionIn RO
 	SetRegView 64
 
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR
-	WriteRegStr HKLM "Software\OpenJDK" "InstallPath" "$INSTDIR"
+	WriteRegStr HKLM "Software\OpenJRE" "InstallPath" "$INSTDIR"
 
 	; Write the uninstall keys for Windows
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "DisplayName" "OpenJDK"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "Publisher" "Grigore Stefan [ github.com/g-stefan ]"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "DisplayVersion" "${OpenJDKVersion}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "DisplayIcon" '"$INSTDIR\bin\java.exe"'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "NoRepair" 1
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "DisplayName" "OpenJRE"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "Publisher" "Grigore Stefan [ github.com/g-stefan ]"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "DisplayVersion" "${OpenJREVersion}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "DisplayIcon" '"$INSTDIR\bin\java.exe"'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "NoRepair" 1
 
-	; JDK
-	WriteRegStr HKLM "Software\JavaSoft\Java Development Kit" "CurrentVersion" "${OpenJDKVersion}"
-	WriteRegStr HKLM "Software\JavaSoft\Java Development Kit\${OpenJDKVersion}" "JavaHome" "$INSTDIR"
-	WriteRegStr HKLM "Software\JavaSoft\Java Development Kit\${OpenJDKVersion}" "MicroVersion" "0"
-	
 	; JRE
-	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion" "${OpenJDKVersion}"
-	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment\${OpenJDKVersion}" "JavaHome" "$INSTDIR"
-	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment\${OpenJDKVersion}" "MicroVersion" "0"
-	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment\${OpenJDKVersion}" "RuntimeLib" "$INSTDIR\bin\server\jvm.dll"
+	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment" "CurrentVersion" "${OpenJREVersion}"
+	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment\${OpenJREVersion}" "JavaHome" "$INSTDIR"
+	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment\${OpenJREVersion}" "MicroVersion" "0"
+	WriteRegStr HKLM "Software\JavaSoft\Java Runtime Environment\${OpenJREVersion}" "RuntimeLib" "$INSTDIR\bin\server\jvm.dll"
 
 	; Program files
-	File /r "release\jdk\*"
+	File /r "output\jre\*"
 
 ; Uninstaller
 !ifndef INNER
 	SetOutPath $INSTDIR 
 	; this packages the signed uninstaller 
-	File "build\Uninstall.exe"
+	File "temp\Uninstall.exe"
 !endif
 
 	; Computing EstimatedSize
 	Call GetInstalledSize
 	Pop $0
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK" "EstimatedSize" "$0"
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE" "EstimatedSize" "$0"
 
 	; Set to HKLM
 	EnVar::SetHKLM
@@ -160,10 +155,10 @@ Section "OpenJDK (required)" MainSection
 		Pop $0
 	${EndIf}
 
-	; Set JAVA_HOME
-	EnVar::Delete "JAVA_HOME"
+	; Set JRE_HOME
+	EnVar::Delete "JRE_HOME"
 	Pop $0
-	EnVar::AddValue "JAVA_HOME" "$INSTDIR"
+	EnVar::AddValue "JRE_HOME" "$INSTDIR"
 	Pop $0
 
 SectionEnd
@@ -172,7 +167,7 @@ SectionEnd
 ;Descriptions
 
 ;Language strings
-LangString DESC_MainSection ${LANG_ENGLISH} "OpenJDK"
+LangString DESC_MainSection ${LANG_ENGLISH} "OpenJRE"
 
 ;Assign language strings to sections
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -180,7 +175,7 @@ LangString DESC_MainSection ${LANG_ENGLISH} "OpenJDK"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
-;Uninstaller Section
+; Uninstaller
 !ifdef INNER
 Section "Uninstall"
 
@@ -213,16 +208,16 @@ Section "Uninstall"
 	!macroend
  
 	ClearErrors
-	ReadRegStr $INSTDIR HKLM "Software\OpenJDK" "InstallPath"
+	ReadRegStr $INSTDIR HKLM "Software\OpenJRE" "InstallPath"
 	IfErrors +2
 	StrCmp $INSTDIR "" 0 +2
-		StrCpy $INSTDIR "$PROGRAMFILES64\OpenJDK"
+		StrCpy $INSTDIR "$PROGRAMFILES64\OpenJRE"
  
 	# Check that the uninstall isn't dangerous.
 	!insertmacro BadPathsCheck
  
-	# Does path end with "\OpenJDK"?
-	!define CHECK_PATH "\OpenJDK"
+	# Does path end with "\OpenJRE"?
+	!define CHECK_PATH "\OpenJRE"
 	StrLen $R1 "${CHECK_PATH}"
 	StrCpy $R0 $INSTDIR "" -$R1
 	StrCmp $R0 "${CHECK_PATH}" +3
@@ -240,8 +235,8 @@ Section "Uninstall"
 	SetOutPath $TEMP
 
 	; Remove registry keys
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJDK"
-	DeleteRegKey HKLM "Software\OpenJDK"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenJRE"
+	DeleteRegKey HKLM "Software\OpenJRE"
 
 	; Remove files and uninstaller
 	RMDir /r "$INSTDIR"
@@ -257,8 +252,8 @@ Section "Uninstall"
 		Pop $0
 	${EndIf}
 
-	; Remove JAVA_HOME
-	EnVar::Delete "JAVA_HOME"
+	; Remove JRE_HOME
+	EnVar::Delete "JRE_HOME"
 	Pop $0
 
 SectionEnd
