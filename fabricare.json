@@ -1,0 +1,18 @@
+{
+	"solution": {
+		"name" : "installer-openjdk",
+		"type" : "xyo-cpp",
+		"projects": [
+			{
+				"name" : "installer-openjdk",
+				"SPDX-License-Identifier": "MIT",
+				"version" : "19.0.1",
+				"noVersion" : true
+			}
+		],
+		"hasGithub" : true,
+		"sourceLinks" : {
+			"openjdk-19.0.1_windows-x64_bin.zip" : "https://openjdk.java.net/,https://jdk.java.net/17/"
+		}
+	}
+}
