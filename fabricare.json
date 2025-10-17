@@ -6,12 +6,12 @@
 			{
 				"name" : "installer-openjdk",
 				"SPDX-License-Identifier": "MIT",
-				"version" : "23",
+				"version" : "25",
 				"noVersion" : true
 			}
 		],
 		"sourceLinks" : {
-			"openjdk-23_windows-x64_bin.zip" : "https://openjdk.java.net/,https://jdk.java.net/23/"
+			"openjdk-25_windows-x64_bin.zip" : "https://openjdk.java.net/,https://jdk.java.net/25/"
 		}
 	}
 }
